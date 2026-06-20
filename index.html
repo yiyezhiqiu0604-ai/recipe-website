@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🥘 食材食谱生成器 - 点选食材，智能匹配美食</title>
+<style>
+/* ========== 全局样式 ========== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #e67e22;
+  --primary-dark: #d35400;
+  --primary-light: #fdebd0;
+  --bg: #fefaf5;
+  --card-bg: #ffffff;
+  --text: #2c3e50;
+  --text-light: #7f8c8d;
+  --border: #f0e6da;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-hover: 0 6px 24px rgba(0,0,0,0.10);
+  --radius: 14px;
+  --tag-soup: #27ae60;
+  --tag-stir: #e74c3c;
+  --tag-stew: #8e44ad;
+  --tag-cold: #3498db;
+  --tag-staple: #f39c12;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ========== 头部 ========== */
+.header {
+  background: linear-gradient(135deg, #e67e22 0%, #f39c12 30%, #d35400 100%);
+  color: white;
+  text-align: center;
+  padding: 32px 20px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.10) 0%, transparent 60%);
+  animation: headerShine 6s ease-in-out infinite;
+}
+@keyframes headerShine {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(5%, 3%); }
+}
+.header h1 {
+  font-size: 2.2em;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.header p {
+  font-size: 1.05em;
+  opacity: 0.9;
+  margin-top: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ========== 主容器 ========== */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+/* ========== 已选食材栏 ========== */
+.selected-bar {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 52px;
+  border: 2px dashed transparent;
+  transition: border-color 0.3s;
+}
+.selected-bar:has(.selected-tag) {
+  border-color: var(--primary);
+}
+.selected-label {
+  font-weight: 600;
+  color: var(--text-light);
+  font-size: 0.95em;
+  white-space: nowrap;
+}
+.selected-tag {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  animation: popIn 0.25s ease-out;
+}
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.selected-tag .remove {
+  cursor: pointer;
+  font-size: 1.1em;
+  line-height: 1;
+  color: #c0392b;
+  transition: transform 0.2s;
+}
+.selected-tag .remove:hover {
+  transform: scale(1.3);
+}
+.clear-btn {
+  margin-left: auto;
+  background: none;
+  border: 1px solid #e0d5c5;
+  color: #999;
+  padding: 5px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: all 0.2s;
+}
+.clear-btn:hover {
+  background: #fdebd0;
+  color: var(--primary-dark);
+  border-color: var(--primary);
+}
+
+/* ========== 食材选择区 ========== */
+.ingredients-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.ingredients-section h3 {
+  font-size: 1.15em;
+  margin-bottom: 12px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ingredients-section h3::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 20px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+.category-group {
+  margin-bottom: 16px;
+}
+.category-group:last-child { margin-bottom: 0; }
+.category-title {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 8px;
+  padding-left: 2px;
+}
+.ingredient-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ingredient-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 22px;
+  background: #fefefe;
+  cursor: pointer;
+  font-size: 0.92em;
+  color: var(--text);
+  transition: all 0.2s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+.ingredient-btn:hover {
+  border-color: var(--primary);
+  background: #fff8f0;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(230,126,34,0.12);
+}
+.ingredient-btn.selected {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  font-weight: 600;
+  box-shadow: 0 3px 12px rgba(230,126,34,0.3);
+  transform: translateY(-1px);
+}
+.ingredient-btn .emoji {
+  font-size: 1.2em;
+}
+
+/* ========== 分类标签 ========== */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.filter-btn {
+  padding: 8px 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 22px;
+  background: var(--card-bg);
+  cursor: pointer;
+  font-size: 0.9em;
+  color: var(--text);
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: var(--shadow);
+}
+.filter-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary-dark);
+}
+.filter-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 3px 12px rgba(230,126,34,0.25);
+}
+
+/* ========== 食谱结果区 ========== */
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.results-header h2 {
+  font-size: 1.3em;
+  color: var(--text);
+}
+.results-count {
+  color: var(--text-light);
+  font-size: 0.9em;
+}
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+/* ========== 食谱卡片 ========== */
+.recipe-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+}
+.recipe-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-3px);
+}
+.recipe-card-top {
+  padding: 18px 18px 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.recipe-name {
+  font-size: 1.15em;
+  font-weight: 700;
+  color: var(--text);
+}
+.recipe-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.badge-soup { background: var(--tag-soup); }
+.badge-stir { background: var(--tag-stir); }
+.badge-stew { background: var(--tag-stew); }
+.badge-cold { background: var(--tag-cold); }
+.badge-staple { background: var(--tag-staple); }
+
+.recipe-card-body {
+  padding: 0 18px 14px;
+  flex: 1;
+}
+.recipe-match {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.match-tag {
+  background: #e8f8f5;
+  color: #1abc9c;
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-size: 0.78em;
+  font-weight: 500;
+}
+.match-tag.miss {
+  background: #fdf2f2;
+  color: #c0392b;
+}
+.recipe-desc {
+  font-size: 0.88em;
+  color: var(--text-light);
+  line-height: 1.5;
+}
+
+.recipe-card-bottom {
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+}
+.recipe-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+  flex: 1;
+  justify-content: center;
+}
+.recipe-link.video {
+  background: #fef5f5;
+  color: #e74c3c;
+  border: 1px solid #fadbd8;
+}
+.recipe-link.video:hover {
+  background: #e74c3c;
+  color: #fff;
+}
+.recipe-link.text {
+  background: #f5f9fe;
+  color: #2980b9;
+  border: 1px solid #d5e5f5;
+}
+.recipe-link.text:hover {
+  background: #2980b9;
+  color: #fff;
+}
+
+/* ========== 空状态 ========== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-light);
+}
+.empty-state .icon {
+  font-size: 4em;
+  margin-bottom: 16px;
+}
+.empty-state h3 {
+  font-size: 1.2em;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.empty-state p {
+  font-size: 0.95em;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* ========== 底部 ========== */
+.footer {
+  text-align: center;
+  padding: 24px;
+  color: #bbb;
+  font-size: 0.85em;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 640px) {
+  .header h1 { font-size: 1.5em; }
+  .header p { font-size: 0.9em; }
+  .container { padding: 12px; }
+  .recipe-grid {
+    grid-template-columns: 1fr;
+  }
+  .ingredient-btn {
+    padding: 6px 10px;
+    font-size: 0.82em;
+    gap: 3px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 头部 ===== -->
+<header class="header">
+  <h1>🥘 食材食谱生成器</h1>
+  <p>点击食材，智能匹配美味食谱 · 含视频教程与图文做法</p>
+</header>
+
+<div class="container">
+
+  <!-- ===== 已选食材栏 ===== -->
+  <div class="selected-bar" id="selectedBar">
+    <span class="selected-label">📋 已选食材：</span>
+    <span id="selectedTags"></span>
+    <button class="clear-btn" id="clearBtn" style="display:none">✕ 清空</button>
+    <span style="color:#bbb;font-size:0.85em" id="emptyHint">👆 点击下方食材开始选择</span>
+  </div>
+
+  <!-- ===== 食材选择区 ===== -->
+  <div class="ingredients-section" id="ingredientsSection">
+    <h3>🥬 选择你手边的食材</h3>
+  </div>
+
+  <!-- ===== 分类筛选 ===== -->
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all">📋 全部食谱</button>
+    <button class="filter-btn" data-filter="汤羹">🍲 汤羹</button>
+    <button class="filter-btn" data-filter="炒菜">🍳 炒菜</button>
+    <button class="filter-btn" data-filter="炖菜">🥘 炖菜</button>
+    <button class="filter-btn" data-filter="凉拌">🥗 凉拌</button>
+    <button class="filter-btn" data-filter="主食">🍚 主食</button>
+  </div>
+
+  <!-- ===== 食谱结果 ===== -->
+  <div class="results-header">
+    <h2>📖 匹配食谱</h2>
+    <span class="results-count" id="resultsCount"></span>
+  </div>
+  <div class="recipe-grid" id="recipeGrid"></div>
+
+  <!-- ===== 底部 ===== -->
+  <footer class="footer">
+    🍳 点击食材自动匹配菜谱 · 所有链接指向真实食谱网站
+  </footer>
+</div>
+
+<script>
+// ==================== 数据 ====================
+
+// 食材分类数据
+const ingredientCategories = [
+  {
+    name: '🥬 蔬菜菌菇',
+    items: [
+      { name: '番茄', emoji: '🍅' },
+      { name: '鸡蛋', emoji: '🥚' },
+      { name: '土豆', emoji: '🥔' },
+      { name: '青椒', emoji: '🫑' },
+      { name: '白菜', emoji: '🥬' },
+      { name: '冬瓜', emoji: '🍈' },
+      { name: '玉米', emoji: '🌽' },
+      { name: '胡萝卜', emoji: '🥕' },
+      { name: '茄子', emoji: '🍆' },
+      { name: '黄瓜', emoji: '🥒' },
+      { name: '西兰花', emoji: '🥦' },
+      { name: '菠菜', emoji: '🥬' },
+      { name: '洋葱', emoji: '🧅' },
+      { name: '菌菇', emoji: '🍄' },
+      { name: '木耳', emoji: '🪵' },
+      { name: '花生', emoji: '🥜' },
+    ]
+  },
+  {
+    name: '🥩 肉禽蛋类',
+    items: [
+      { name: '猪肉', emoji: '🐷' },
+      { name: '排骨', emoji: '🦴' },
+      { name: '牛肉', emoji: '🐂' },
+      { name: '鸡胸肉', emoji: '🍗' },
+      { name: '鸡腿', emoji: '🍗' },
+      { name: '五花肉', emoji: '🥓' },
+    ]
+  },
+  {
+    name: '🦐 海鲜水产',
+    items: [
+      { name: '虾', emoji: '🦐' },
+      { name: '鱼', emoji: '🐟' },
+      { name: '紫菜', emoji: '🌿' },
+      { name: '海带', emoji: '🌊' },
+    ]
+  },
+  {
+    name: '🫘 豆制品',
+    items: [
+      { name: '豆腐', emoji: '🧈' },
+      { name: '豆皮', emoji: '🫘' },
+      { name: '腐竹', emoji: '🥢' },
+    ]
+  },
+  {
+    name: '🧂 调味佐料',
+    items: [
+      { name: '葱', emoji: '🧅' },
+      { name: '姜', emoji: '🫚' },
+      { name: '蒜', emoji: '🧄' },
+      { name: '辣椒', emoji: '🌶️' },
+      { name: '花椒', emoji: '🫑' },
+      { name: '八角', emoji: '⭐' },
+      { name: '粉条', emoji: '🍝' },
+    ]
+  }
+];
+
+// 食谱数据库 - 含真实链接
+const recipes = [
+  {
+    name: '番茄炒蛋',
+    category: '炒菜',
+    ingredients: ['番茄', '鸡蛋', '葱'],
+    desc: '经典国民家常菜，番茄酸甜多汁包裹嫩滑鸡蛋，简单快手，配米饭一绝。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=番茄炒蛋&type=video',
+    textUrl: 'https://home.meishichina.com/search/番茄炒蛋/'
+  },
+  {
+    name: '番茄蛋汤',
+    category: '汤羹',
+    ingredients: ['番茄', '鸡蛋', '葱'],
+    desc: '酸甜开胃的经典清汤，番茄煮出红汤后淋入蛋花，清爽解腻，老少皆宜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=番茄蛋汤&type=video',
+    textUrl: 'https://home.meishichina.com/search/番茄蛋汤/'
+  },
+  {
+    name: '酸辣土豆丝',
+    category: '炒菜',
+    ingredients: ['土豆', '青椒', '辣椒', '蒜'],
+    desc: '土豆切丝爆炒，酸辣脆爽，是考验刀工和火候的经典下饭菜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=酸辣土豆丝&type=video',
+    textUrl: 'https://home.meishichina.com/search/酸辣土豆丝/'
+  },
+  {
+    name: '地三鲜',
+    category: '炒菜',
+    ingredients: ['土豆', '茄子', '青椒'],
+    desc: '东北名菜，土豆茄子青椒三样素菜过油后爆炒，鲜香浓郁比肉还好吃。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=地三鲜&type=video',
+    textUrl: 'https://home.meishichina.com/search/地三鲜/'
+  },
+  {
+    name: '红烧排骨',
+    category: '炖菜',
+    ingredients: ['排骨', '姜', '蒜', '八角'],
+    desc: '排骨先焯后炒糖色，加酱油慢炖至骨酥肉烂，色泽红亮，咸甜适口。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=红烧排骨&type=video',
+    textUrl: 'https://home.meishichina.com/search/红烧排骨/'
+  },
+  {
+    name: '冬瓜排骨汤',
+    category: '汤羹',
+    ingredients: ['冬瓜', '排骨', '姜'],
+    desc: '清淡鲜美的滋补汤品，排骨炖出浓郁汤底，冬瓜清甜入口即化，夏季消暑佳品。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=冬瓜排骨汤&type=video',
+    textUrl: 'https://home.meishichina.com/search/冬瓜排骨汤/'
+  },
+  {
+    name: '玉米排骨汤',
+    category: '汤羹',
+    ingredients: ['玉米', '排骨', '胡萝卜'],
+    desc: '玉米和胡萝卜的清甜融入排骨汤中，汤色金黄，鲜甜浓郁，营养满分。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=玉米排骨汤&type=video',
+    textUrl: 'https://home.meishichina.com/search/玉米排骨汤/'
+  },
+  {
+    name: '鱼香肉丝',
+    category: '炒菜',
+    ingredients: ['猪肉', '胡萝卜', '青椒', '木耳'],
+    desc: '川菜经典，虽名鱼香实无鱼，酸甜微辣，肉丝嫩滑配菜脆爽，下饭神器。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=鱼香肉丝&type=video',
+    textUrl: 'https://home.meishichina.com/search/鱼香肉丝/'
+  },
+  {
+    name: '宫保鸡丁',
+    category: '炒菜',
+    ingredients: ['鸡胸肉', '花生', '辣椒', '葱'],
+    desc: '鸡肉丁滑嫩、花生酥脆，荔枝味酸甜中带微辣，是一道闻名中外的川菜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=宫保鸡丁&type=video',
+    textUrl: 'https://home.meishichina.com/search/宫保鸡丁/'
+  },
+  {
+    name: '麻婆豆腐',
+    category: '炒菜',
+    ingredients: ['豆腐', '猪肉', '辣椒', '花椒'],
+    desc: '麻辣鲜香嫩烫，豆腐嫩而不碎，肉末酥香，花椒麻味悠长，米饭杀手。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=麻婆豆腐&type=video',
+    textUrl: 'https://home.meishichina.com/search/麻婆豆腐/'
+  },
+  {
+    name: '红烧肉',
+    category: '炖菜',
+    ingredients: ['五花肉', '八角', '姜', '蒜'],
+    desc: '五花肉切块焯水炒糖色，文火慢炖至肥而不腻入口即化，色泽红润诱人。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=红烧肉&type=video',
+    textUrl: 'https://home.meishichina.com/search/红烧肉/'
+  },
+  {
+    name: '清炒西兰花',
+    category: '炒菜',
+    ingredients: ['西兰花', '蒜'],
+    desc: '西兰花焯水后蒜蓉爆炒，翠绿爽脆，做法简单却营养丰富，餐桌常备素菜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=蒜蓉西兰花&type=video',
+    textUrl: 'https://home.meishichina.com/search/蒜蓉西兰花/'
+  },
+  {
+    name: '紫菜蛋花汤',
+    category: '汤羹',
+    ingredients: ['紫菜', '鸡蛋', '葱'],
+    desc: '最快手的汤品之一，紫菜入锅即熟，淋入蛋花点缀葱花，清淡鲜美省时省力。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=紫菜蛋花汤&type=video',
+    textUrl: 'https://home.meishichina.com/search/紫菜蛋花汤/'
+  },
+  {
+    name: '酸辣汤',
+    category: '汤羹',
+    ingredients: ['豆腐', '鸡蛋', '木耳', '辣椒'],
+    desc: '酸辣开胃的经典中式浓汤，豆腐嫩木耳脆蛋花飘，醋香扑鼻，暖身驱寒。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=酸辣汤&type=video',
+    textUrl: 'https://home.meishichina.com/search/酸辣汤/'
+  },
+  {
+    name: '菌菇豆腐汤',
+    category: '汤羹',
+    ingredients: ['菌菇', '豆腐', '葱'],
+    desc: '菌菇的鲜美与豆腐的嫩滑完美结合，清淡却不寡味，营养丰富的素汤之选。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=菌菇豆腐汤&type=video',
+    textUrl: 'https://home.meishichina.com/search/菌菇豆腐汤/'
+  },
+  {
+    name: '白菜炖粉条',
+    category: '炖菜',
+    ingredients: ['白菜', '猪肉', '粉条'],
+    desc: '东北经典炖菜，白菜清甜粉条Q弹，猪肉增香，一锅炖出满满家的味道。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=白菜炖粉条&type=video',
+    textUrl: 'https://home.meishichina.com/search/白菜炖粉条/'
+  },
+  {
+    name: '红烧茄子',
+    category: '炒菜',
+    ingredients: ['茄子', '蒜', '葱'],
+    desc: '茄子过油后红烧，酱香浓郁软糯入味，蒜香点睛，是素食中的米饭搭档。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=红烧茄子&type=video',
+    textUrl: 'https://home.meishichina.com/search/红烧茄子/'
+  },
+  {
+    name: '黄瓜炒蛋',
+    category: '炒菜',
+    ingredients: ['黄瓜', '鸡蛋', '蒜'],
+    desc: '清脆黄瓜片与嫩滑鸡蛋同炒，清淡爽口，是一道快手又健康的家常小炒。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=黄瓜炒鸡蛋&type=video',
+    textUrl: 'https://home.meishichina.com/search/黄瓜炒鸡蛋/'
+  },
+  {
+    name: '土豆炖牛肉',
+    category: '炖菜',
+    ingredients: ['土豆', '牛肉', '胡萝卜', '洋葱'],
+    desc: '经典搭配，牛肉软烂土豆绵密，胡萝卜增甜洋葱添香，汤汁浓稠拌饭极佳。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=土豆炖牛肉&type=video',
+    textUrl: 'https://home.meishichina.com/search/土豆炖牛肉/'
+  },
+  {
+    name: '凉拌黄瓜',
+    category: '凉拌',
+    ingredients: ['黄瓜', '蒜', '辣椒'],
+    desc: '拍黄瓜是最经典的凉菜，蒜泥醋汁调味，酸辣脆爽，夏日开胃解暑必备。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=凉拌黄瓜&type=video',
+    textUrl: 'https://home.meishichina.com/search/凉拌黄瓜/'
+  },
+  {
+    name: '清蒸鱼',
+    category: '炒菜',
+    ingredients: ['鱼', '姜', '葱'],
+    desc: '鲜活鱼清蒸最显本味，姜丝葱丝去腥提鲜，蒸鱼豉油点睛，鱼肉鲜嫩如豆腐。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=清蒸鱼&type=video',
+    textUrl: 'https://home.meishichina.com/search/清蒸鱼/'
+  },
+  {
+    name: '蒜蓉菠菜',
+    category: '炒菜',
+    ingredients: ['菠菜', '蒜'],
+    desc: '菠菜快速焯水后蒜蓉爆炒，去除草酸保留翠绿，简单调味即是营养素菜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=蒜蓉菠菜&type=video',
+    textUrl: 'https://home.meishichina.com/search/蒜蓉菠菜/'
+  },
+  {
+    name: '红烧鸡腿',
+    category: '炖菜',
+    ingredients: ['鸡腿', '姜', '蒜', '八角'],
+    desc: '鸡腿划刀腌制后红烧，酱汁渗透入骨，肉质软烂入味，孩子最爱的大口吃菜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=红烧鸡腿&type=video',
+    textUrl: 'https://home.meishichina.com/search/红烧鸡腿/'
+  },
+  {
+    name: '回锅肉',
+    category: '炒菜',
+    ingredients: ['五花肉', '青椒', '蒜'],
+    desc: '五花肉先煮后切片回锅爆炒，搭配青椒和豆瓣酱，肥而不腻香辣下饭。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=回锅肉&type=video',
+    textUrl: 'https://home.meishichina.com/search/回锅肉/'
+  },
+  {
+    name: '洋葱炒蛋',
+    category: '炒菜',
+    ingredients: ['洋葱', '鸡蛋'],
+    desc: '洋葱的天然甜味与鸡蛋完美搭配，做法极简单却美味，几分钟搞定的快手菜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=洋葱炒鸡蛋&type=video',
+    textUrl: 'https://home.meishichina.com/search/洋葱炒鸡蛋/'
+  },
+  {
+    name: '海带排骨汤',
+    category: '汤羹',
+    ingredients: ['海带', '排骨', '姜'],
+    desc: '海带富含碘和钙，与排骨同炖汤鲜味浓，营养滋补，是经典的广式老火汤。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=海带排骨汤&type=video',
+    textUrl: 'https://home.meishichina.com/search/海带排骨汤/'
+  },
+  {
+    name: '肉末茄子',
+    category: '炒菜',
+    ingredients: ['茄子', '猪肉', '蒜', '葱'],
+    desc: '茄子软糯吸饱肉末酱汁，咸鲜微甜，蒜香浓郁，是一道超级下饭的家常菜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=肉末茄子&type=video',
+    textUrl: 'https://home.meishichina.com/search/肉末茄子/'
+  },
+  {
+    name: '番茄炖牛腩',
+    category: '炖菜',
+    ingredients: ['番茄', '牛肉', '洋葱', '姜'],
+    desc: '番茄炒出红油后与牛腩同炖，酸甜浓郁，牛肉软烂，汤都可以喝光。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=番茄炖牛腩&type=video',
+    textUrl: 'https://home.meishichina.com/search/番茄炖牛腩/'
+  },
+  {
+    name: '青椒肉丝',
+    category: '炒菜',
+    ingredients: ['青椒', '猪肉', '姜', '蒜'],
+    desc: '肉丝嫩滑青椒脆爽，简单调味却鲜香十足，是每个中国家庭都会做的经典菜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=青椒肉丝&type=video',
+    textUrl: 'https://home.meishichina.com/search/青椒肉丝/'
+  },
+  {
+    name: '糖醋排骨',
+    category: '炖菜',
+    ingredients: ['排骨', '姜', '蒜'],
+    desc: '排骨炸至金黄后裹上糖醋汁，酸甜可口外酥里嫩，宴客必备的招牌硬菜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=糖醋排骨&type=video',
+    textUrl: 'https://home.meishichina.com/search/糖醋排骨/'
+  },
+  {
+    name: '鸡蛋羹',
+    category: '汤羹',
+    ingredients: ['鸡蛋', '葱'],
+    desc: '鸡蛋打散加温水蒸制，表面光滑如镜口感嫩如布丁，是老人孩子都爱的营养美食。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=鸡蛋羹&type=video',
+    textUrl: 'https://home.meishichina.com/search/鸡蛋羹/'
+  },
+  {
+    name: '凉拌木耳',
+    category: '凉拌',
+    ingredients: ['木耳', '蒜', '辣椒', '葱'],
+    desc: '木耳泡发焯水后凉拌，酸辣脆爽，口感Q弹，是一道健康低卡的凉菜首选。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=凉拌木耳&type=video',
+    textUrl: 'https://home.meishichina.com/search/凉拌木耳/'
+  },
+  {
+    name: '油焖大虾',
+    category: '炒菜',
+    ingredients: ['虾', '姜', '蒜', '葱'],
+    desc: '大虾油焖至壳酥肉弹，酱汁浓郁甜咸适中，吮指回味，宴客必备海鲜菜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=油焖大虾&type=video',
+    textUrl: 'https://home.meishichina.com/search/油焖大虾/'
+  },
+  {
+    name: '土豆泥',
+    category: '主食',
+    ingredients: ['土豆', '葱'],
+    desc: '土豆煮熟捣成泥，加牛奶黄油调味，细腻绵密奶香浓郁，西式中做的人气小食。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=土豆泥&type=video',
+    textUrl: 'https://home.meishichina.com/search/土豆泥/'
+  },
+  {
+    name: '蛋炒饭',
+    category: '主食',
+    ingredients: ['鸡蛋', '葱', '胡萝卜'],
+    desc: '隔夜米饭与鸡蛋同炒，粒粒分明金黄诱人，葱香点睛，是最朴实的家常美味。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=蛋炒饭&type=video',
+    textUrl: 'https://home.meishichina.com/search/蛋炒饭/'
+  },
+];
+
+// ==================== 状态管理 ====================
+let selectedIngredients = new Set();
+let currentFilter = 'all';
+
+// ==================== 渲染食材按钮 ====================
+function renderIngredients() {
+  const section = document.getElementById('ingredientsSection');
+  let html = '<h3>🥬 选择你手边的食材</h3>';
+
+  ingredientCategories.forEach(cat => {
+    html += `<div class="category-group">
+      <div class="category-title">${cat.name}</div>
+      <div class="ingredient-grid">`;
+    cat.items.forEach(item => {
+      const sel = selectedIngredients.has(item.name) ? ' selected' : '';
+      html += `<button class="ingredient-btn${sel}" data-ingredient="${item.name}">
+        <span class="emoji">${item.emoji}</span>${item.name}
+      </button>`;
+    });
+    html += '</div></div>';
+  });
+
+  section.innerHTML = html;
+
+  // 绑定事件
+  section.querySelectorAll('.ingredient-btn').forEach(btn => {
+    btn.addEventListener('click', () => toggleIngredient(btn.dataset.ingredient));
+  });
+}
+
+// ==================== 切换食材选择 ====================
+function toggleIngredient(name) {
+  if (selectedIngredients.has(name)) {
+    selectedIngredients.delete(name);
+  } else {
+    selectedIngredients.add(name);
+  }
+  updateSelectedBar();
+  renderIngredients();
+  renderRecipes();
+}
+
+// ==================== 更新已选食材栏 ====================
+function updateSelectedBar() {
+  const tagsContainer = document.getElementById('selectedTags');
+  const clearBtn = document.getElementById('clearBtn');
+  const emptyHint = document.getElementById('emptyHint');
+
+  if (selectedIngredients.size === 0) {
+    tagsContainer.innerHTML = '';
+    clearBtn.style.display = 'none';
+    emptyHint.style.display = 'inline';
+    return;
+  }
+
+  emptyHint.style.display = 'none';
+  clearBtn.style.display = 'inline-block';
+
+  let html = '';
+  selectedIngredients.forEach(name => {
+    // 找到emoji
+    let emoji = '';
+    for (const cat of ingredientCategories) {
+      const found = cat.items.find(i => i.name === name);
+      if (found) { emoji = found.emoji; break; }
+    }
+    html += `<span class="selected-tag">
+      ${emoji} ${name}
+      <span class="remove" data-ingredient="${name}">×</span>
+    </span>`;
+  });
+  tagsContainer.innerHTML = html;
+
+  // 绑定移除事件
+  tagsContainer.querySelectorAll('.remove').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectedIngredients.delete(btn.dataset.ingredient);
+      updateSelectedBar();
+      renderIngredients();
+      renderRecipes();
+    });
+  });
+}
+
+// ==================== 食谱匹配与排序 ====================
+function matchAndSortRecipes() {
+  const selected = Array.from(selectedIngredients);
+
+  if (selected.length === 0) {
+    return recipes.map(r => ({ ...r, matchCount: 0, matched: [], missing: r.ingredients }));
+  }
+
+  return recipes.map(recipe => {
+    const matched = recipe.ingredients.filter(ing => selected.includes(ing));
+    const missing = recipe.ingredients.filter(ing => !selected.includes(ing));
+    return {
+      ...recipe,
+      matchCount: matched.length,
+      matched,
+      missing,
+    };
+  }).sort((a, b) => {
+    // 先按匹配数降序，再按缺失数升序
+    if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+    return a.missing.length - b.missing.length;
+  });
+}
+
+// ==================== 渲染食谱卡片 ====================
+function renderRecipes() {
+  const grid = document.getElementById('recipeGrid');
+  const count = document.getElementById('resultsCount');
+
+  let results = matchAndSortRecipes();
+
+  // 分类筛选
+  if (currentFilter !== 'all') {
+    results = results.filter(r => r.category === currentFilter);
+  }
+
+  count.textContent = `共 ${results.length} 道食谱`;
+
+  if (results.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column: 1/-1;">
+        <div class="icon">🍽️</div>
+        <h3>还没有匹配的食谱</h3>
+        <p>尝试选择更多食材，或切换到"全部食谱"查看更多选项</p>
+      </div>`;
+    return;
+  }
+
+  const badgeClass = {
+    '汤羹': 'badge-soup',
+    '炒菜': 'badge-stir',
+    '炖菜': 'badge-stew',
+    '凉拌': 'badge-cold',
+    '主食': 'badge-staple',
+  };
+
+  let html = '';
+  results.forEach(recipe => {
+    // 匹配/缺失食材标签
+    let matchHtml = '';
+    if (selectedIngredients.size > 0) {
+      recipe.matched.forEach(m => {
+        matchHtml += `<span class="match-tag">✅ ${m}</span>`;
+      });
+      recipe.missing.forEach(m => {
+        matchHtml += `<span class="match-tag miss">➕ ${m}</span>`;
+      });
+    } else {
+      recipe.ingredients.forEach(m => {
+        matchHtml += `<span class="match-tag">📌 ${m}</span>`;
+      });
+    }
+
+    html += `
+      <div class="recipe-card">
+        <div class="recipe-card-top">
+          <span class="recipe-name">${recipe.name}</span>
+          <span class="recipe-badge ${badgeClass[recipe.category] || ''}">${recipe.category}</span>
+        </div>
+        <div class="recipe-card-body">
+          <div class="recipe-match">${matchHtml}</div>
+          <p class="recipe-desc">${recipe.desc}</p>
+        </div>
+        <div class="recipe-card-bottom">
+          <a class="recipe-link video" href="${recipe.videoUrl}" target="_blank" rel="noopener">
+            ▶️ 视频教程
+          </a>
+          <a class="recipe-link text" href="${recipe.textUrl}" target="_blank" rel="noopener">
+            📖 图文做法
+          </a>
+        </div>
+      </div>`;
+  });
+
+  grid.innerHTML = html;
+}
+
+// ==================== 分类筛选 ====================
+function setupFilters() {
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderRecipes();
+    });
+  });
+}
+
+// ==================== 清空按钮 ====================
+document.getElementById('clearBtn').addEventListener('click', () => {
+  selectedIngredients.clear();
+  updateSelectedBar();
+  renderIngredients();
+  renderRecipes();
+});
+
+// ==================== 初始化 ====================
+function init() {
+  renderIngredients();
+  updateSelectedBar();
+  setupFilters();
+  renderRecipes();
+}
+
+init();
+</script>
+
+</body>
+</html>
