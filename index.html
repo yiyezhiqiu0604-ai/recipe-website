@@ -495,6 +495,7 @@ const ingredientCategories = [
       { name: '菌菇', emoji: '🍄' },
       { name: '木耳', emoji: '🪵' },
       { name: '花生', emoji: '🥜' },
+      { name: '南瓜', emoji: '🎃' },
     ]
   },
   {
@@ -523,6 +524,17 @@ const ingredientCategories = [
       { name: '豆腐', emoji: '🧈' },
       { name: '豆皮', emoji: '🫘' },
       { name: '腐竹', emoji: '🥢' },
+    ]
+  },
+  {
+    name: '🍚 主食食材',
+    items: [
+      { name: '大米', emoji: '🍚' },
+      { name: '小米', emoji: '🌾' },
+      { name: '面粉', emoji: '🌾' },
+      { name: '面条', emoji: '🍜' },
+      { name: '饺子皮', emoji: '🥟' },
+      { name: '皮蛋', emoji: '🥚' },
     ]
   },
   {
@@ -816,10 +828,82 @@ const recipes = [
   {
     name: '蛋炒饭',
     category: '主食',
-    ingredients: ['鸡蛋', '葱', '胡萝卜'],
+    ingredients: ['鸡蛋', '葱', '胡萝卜', '大米'],
     desc: '隔夜米饭与鸡蛋同炒，粒粒分明金黄诱人，葱香点睛，是最朴实的家常美味。',
     videoUrl: 'https://www.xiachufang.com/search/?keyword=蛋炒饭&type=video',
     textUrl: 'https://home.meishichina.com/search/蛋炒饭/'
+  },
+  {
+    name: '葱油拌面',
+    category: '主食',
+    ingredients: ['面条', '葱'],
+    desc: '小葱慢火熬出葱油，拌入酱油和面条，葱香四溢，简单却令人难忘的上海经典面食。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=葱油拌面&type=video',
+    textUrl: 'https://home.meishichina.com/search/葱油拌面/'
+  },
+  {
+    name: '番茄鸡蛋面',
+    category: '主食',
+    ingredients: ['面条', '番茄', '鸡蛋', '葱'],
+    desc: '番茄炒出红汤，淋入蛋花，浇在煮好的面条上，酸甜开胃，一碗下去暖心暖胃。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=番茄鸡蛋面&type=video',
+    textUrl: 'https://home.meishichina.com/search/番茄鸡蛋面/'
+  },
+  {
+    name: '炒面',
+    category: '主食',
+    ingredients: ['面条', '鸡蛋', '猪肉', '胡萝卜', '白菜'],
+    desc: '面条煮至八分熟过凉水，与肉丝蔬菜大火爆炒，干香劲道，夜市经典主食。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=炒面&type=video',
+    textUrl: 'https://home.meishichina.com/search/家常炒面/'
+  },
+  {
+    name: '皮蛋瘦肉粥',
+    category: '主食',
+    ingredients: ['大米', '皮蛋', '猪肉', '葱', '姜'],
+    desc: '米粥熬至绵密开花，皮蛋和瘦肉的鲜味融入粥中，撒上葱花姜丝，鲜美暖胃。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=皮蛋瘦肉粥&type=video',
+    textUrl: 'https://home.meishichina.com/search/皮蛋瘦肉粥/'
+  },
+  {
+    name: '小米粥',
+    category: '主食',
+    ingredients: ['小米'],
+    desc: '小米加水小火慢熬至粘稠金黄，养胃健脾，早餐来一碗，搭配小菜暖心落胃。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=小米粥&type=video',
+    textUrl: 'https://home.meishichina.com/search/小米粥/'
+  },
+  {
+    name: '煎饺',
+    category: '主食',
+    ingredients: ['饺子皮', '猪肉', '白菜', '葱', '姜'],
+    desc: '饺子包好后先煎后焖，底部金黄酥脆，内馅鲜美多汁，蘸醋吃简直绝了。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=煎饺&type=video',
+    textUrl: 'https://home.meishichina.com/search/煎饺/'
+  },
+  {
+    name: '阳春面',
+    category: '主食',
+    ingredients: ['面条', '葱'],
+    desc: '最简单的清汤面，猪油酱油打底，葱花飘香，汤清味鲜，朴实却温暖人心。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=阳春面&type=video',
+    textUrl: 'https://home.meishichina.com/search/阳春面/'
+  },
+  {
+    name: '南瓜小米粥',
+    category: '主食',
+    ingredients: ['小米', '南瓜'],
+    desc: '南瓜切块与小米同煮，色泽金黄诱人，口感绵甜顺滑，养胃又美味的健康粥品。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=南瓜小米粥&type=video',
+    textUrl: 'https://home.meishichina.com/search/南瓜小米粥/'
+  },
+  {
+    name: '手擀面',
+    category: '主食',
+    ingredients: ['面粉', '鸡蛋'],
+    desc: '面粉加鸡蛋揉成面团，手工擀制切条，筋道弹牙，配上自己喜欢的浇头更是一绝。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=手擀面&type=video',
+    textUrl: 'https://home.meishichina.com/search/手擀面/'
   },
 ];
 
