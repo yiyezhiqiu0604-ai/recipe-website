@@ -496,6 +496,10 @@ const ingredientCategories = [
       { name: '木耳', emoji: '🪵' },
       { name: '花生', emoji: '🥜' },
       { name: '南瓜', emoji: '🎃' },
+      { name: '豆芽', emoji: '🌱' },
+      { name: '莲藕', emoji: '🪷' },
+      { name: '香菜', emoji: '🌿' },
+      { name: '香菇', emoji: '🍄' },
     ]
   },
   {
@@ -507,6 +511,7 @@ const ingredientCategories = [
       { name: '鸡胸肉', emoji: '🍗' },
       { name: '鸡腿', emoji: '🍗' },
       { name: '五花肉', emoji: '🥓' },
+      { name: '羊肉', emoji: '🐑' },
     ]
   },
   {
@@ -524,6 +529,7 @@ const ingredientCategories = [
       { name: '豆腐', emoji: '🧈' },
       { name: '豆皮', emoji: '🫘' },
       { name: '腐竹', emoji: '🥢' },
+      { name: '豆干', emoji: '🫘' },
     ]
   },
   {
@@ -535,6 +541,16 @@ const ingredientCategories = [
       { name: '面条', emoji: '🍜' },
       { name: '饺子皮', emoji: '🥟' },
       { name: '皮蛋', emoji: '🥚' },
+      { name: '年糕', emoji: '🍡' },
+      { name: '糯米', emoji: '🍚' },
+    ]
+  },
+  {
+    name: '🥫 腌腊干货',
+    items: [
+      { name: '酸菜', emoji: '🥬' },
+      { name: '腊肉', emoji: '🥓' },
+      { name: '粉丝', emoji: '🍝' },
     ]
   },
   {
@@ -904,6 +920,314 @@ const recipes = [
     desc: '面粉加鸡蛋揉成面团，手工擀制切条，筋道弹牙，配上自己喜欢的浇头更是一绝。',
     videoUrl: 'https://www.xiachufang.com/search/?keyword=手擀面&type=video',
     textUrl: 'https://home.meishichina.com/search/手擀面/'
+  },
+
+  // ============ 川菜（四川） ============
+  {
+    name: '水煮鱼',
+    category: '炒菜',
+    ingredients: ['鱼', '豆芽', '辣椒', '花椒', '姜', '蒜'],
+    desc: '川菜经典，鱼片在麻辣红汤中汆烫，热油激香，麻辣鲜嫩，让人欲罢不能。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=水煮鱼&type=video',
+    textUrl: 'https://home.meishichina.com/search/水煮鱼/'
+  },
+  {
+    name: '担担面',
+    category: '主食',
+    ingredients: ['面条', '猪肉', '辣椒', '花椒', '葱'],
+    desc: '成都名小吃，肉末炒香配麻辣酱料，拌入面条，咸鲜微辣香气扑鼻。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=担担面&type=video',
+    textUrl: 'https://home.meishichina.com/search/担担面/'
+  },
+
+  // ============ 鲁菜（山东） ============
+  {
+    name: '锅塌豆腐',
+    category: '炒菜',
+    ingredients: ['豆腐', '鸡蛋', '葱'],
+    desc: '鲁菜经典，豆腐裹蛋液煎至金黄，加高汤塌制入味，外酥里嫩鲜美多汁。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=锅塌豆腐&type=video',
+    textUrl: 'https://home.meishichina.com/search/锅塌豆腐/'
+  },
+
+  // ============ 粤菜（广东） ============
+  {
+    name: '白切鸡',
+    category: '凉拌',
+    ingredients: ['鸡腿', '姜', '葱'],
+    desc: '广东名菜，鸡在微沸水中浸熟，皮爽肉滑原汁原味，蘸姜葱油碟鲜美无比。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=白切鸡&type=video',
+    textUrl: 'https://home.meishichina.com/search/白切鸡/'
+  },
+  {
+    name: '煲仔饭',
+    category: '主食',
+    ingredients: ['大米', '腊肉', '白菜', '香菇'],
+    desc: '米饭与腊味在砂锅中同煲，锅底结出金黄锅巴，腊香渗入米饭，香气四溢。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=煲仔饭&type=video',
+    textUrl: 'https://home.meishichina.com/search/煲仔饭/'
+  },
+  {
+    name: '叉烧肉',
+    category: '炒菜',
+    ingredients: ['五花肉', '蒜', '姜'],
+    desc: '广式烧腊经典，五花肉腌制后烤至表面焦香，色泽红亮，甜咸适中，下饭神器。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=叉烧肉&type=video',
+    textUrl: 'https://home.meishichina.com/search/叉烧肉/'
+  },
+
+  // ============ 苏菜（江苏） ============
+  {
+    name: '红烧狮子头',
+    category: '炖菜',
+    ingredients: ['猪肉', '葱', '姜', '鸡蛋'],
+    desc: '淮扬名菜，大肉丸先炸后炖，软糯鲜香入口即化，筷子一夹就散，故称狮子头。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=红烧狮子头&type=video',
+    textUrl: 'https://home.meishichina.com/search/红烧狮子头/'
+  },
+  {
+    name: '大煮干丝',
+    category: '汤羹',
+    ingredients: ['豆干', '虾', '姜'],
+    desc: '淮扬菜刀工代表，豆腐干切细丝与虾仁同煮，汤清味鲜，干丝绵软吸饱汤汁。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=大煮干丝&type=video',
+    textUrl: 'https://home.meishichina.com/search/大煮干丝/'
+  },
+
+  // ============ 浙菜（浙江） ============
+  {
+    name: '东坡肉',
+    category: '炖菜',
+    ingredients: ['五花肉', '姜', '八角'],
+    desc: '杭州名菜，五花肉大块慢炖，肥而不腻酥烂如豆腐，据传为苏东坡所创。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=东坡肉&type=video',
+    textUrl: 'https://home.meishichina.com/search/东坡肉/'
+  },
+  {
+    name: '西湖醋鱼',
+    category: '炒菜',
+    ingredients: ['鱼', '姜', '葱'],
+    desc: '杭州楼外楼名菜，草鱼烹后浇上糖醋汁，酸甜嫩滑，有"西湖第一鲜"美誉。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=西湖醋鱼&type=video',
+    textUrl: 'https://home.meishichina.com/search/西湖醋鱼/'
+  },
+  {
+    name: '炒年糕',
+    category: '主食',
+    ingredients: ['年糕', '白菜', '猪肉', '胡萝卜'],
+    desc: '江浙经典主食，年糕切片与肉丝蔬菜爆炒，软糯弹牙酱香浓郁，冬至必吃。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=炒年糕&type=video',
+    textUrl: 'https://home.meishichina.com/search/炒年糕/'
+  },
+
+  // ============ 闽菜（福建） ============
+  {
+    name: '荔枝肉',
+    category: '炒菜',
+    ingredients: ['鸡胸肉', '土豆', '番茄'],
+    desc: '福州名菜，肉切花刀炸成荔枝形，裹酸甜番茄汁，外酥里嫩，形似荔枝。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=荔枝肉&type=video',
+    textUrl: 'https://home.meishichina.com/search/荔枝肉/'
+  },
+  {
+    name: '沙茶面',
+    category: '主食',
+    ingredients: ['面条', '虾', '花生'],
+    desc: '厦门特色面食，沙茶酱熬出浓郁汤头，配虾仁海鲜，鲜香浓郁南洋风情。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=沙茶面&type=video',
+    textUrl: 'https://home.meishichina.com/search/沙茶面/'
+  },
+
+  // ============ 湘菜（湖南） ============
+  {
+    name: '剁椒鱼头',
+    category: '炒菜',
+    ingredients: ['鱼', '辣椒', '蒜', '姜'],
+    desc: '湖南招牌菜，大鱼头铺满剁辣椒蒸制，鲜辣嫩滑，汤汁拌面更是绝配。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=剁椒鱼头&type=video',
+    textUrl: 'https://home.meishichina.com/search/剁椒鱼头/'
+  },
+  {
+    name: '小炒肉',
+    category: '炒菜',
+    ingredients: ['五花肉', '青椒', '辣椒', '蒜'],
+    desc: '湖南人最爱家常菜，五花肉煸出油与青椒爆炒，香辣下饭，三碗饭打底。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=小炒肉&type=video',
+    textUrl: 'https://home.meishichina.com/search/小炒肉/'
+  },
+
+  // ============ 东北菜 ============
+  {
+    name: '锅包肉',
+    category: '炒菜',
+    ingredients: ['猪肉', '胡萝卜', '葱', '姜', '蒜'],
+    desc: '哈尔滨名菜，猪里脊挂糊炸酥，浇酸甜汁，外酥里嫩金黄酥脆，东北待客硬菜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=锅包肉&type=video',
+    textUrl: 'https://home.meishichina.com/search/锅包肉/'
+  },
+  {
+    name: '猪肉炖粉条',
+    category: '炖菜',
+    ingredients: ['猪肉', '粉条', '白菜'],
+    desc: '东北经典炖菜，五花肉炖出油香，粉条吸饱肉汁，白菜清甜，一锅炖出家的味道。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=猪肉炖粉条&type=video',
+    textUrl: 'https://home.meishichina.com/search/猪肉炖粉条/'
+  },
+  {
+    name: '小鸡炖蘑菇',
+    category: '炖菜',
+    ingredients: ['鸡腿', '菌菇', '粉条'],
+    desc: '东北硬菜，小笨鸡与榛蘑粉条同炖，鸡汤浓郁菌香四溢，粉条滑溜入味。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=小鸡炖蘑菇&type=video',
+    textUrl: 'https://home.meishichina.com/search/小鸡炖蘑菇/'
+  },
+  {
+    name: '酸菜炖排骨',
+    category: '炖菜',
+    ingredients: ['排骨', '酸菜', '粉条', '姜'],
+    desc: '东北冬天标配，酸菜解腻排骨增香，粉条吸汁，热乎乎一锅酸香开胃。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=酸菜炖排骨&type=video',
+    textUrl: 'https://home.meishichina.com/search/酸菜炖排骨/'
+  },
+
+  // ============ 西北菜 ============
+  {
+    name: '羊肉泡馍',
+    category: '主食',
+    ingredients: ['羊肉', '面粉', '葱', '姜'],
+    desc: '西安名吃，掰碎的馍泡入羊肉汤中，肉烂汤浓馍香，配糖蒜辣酱，暖到心坎。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=羊肉泡馍&type=video',
+    textUrl: 'https://home.meishichina.com/search/羊肉泡馍/'
+  },
+  {
+    name: '大盘鸡',
+    category: '炖菜',
+    ingredients: ['鸡腿', '土豆', '青椒', '辣椒', '面条'],
+    desc: '新疆名菜，鸡肉土豆大块炖煮，汤汁浓郁拌入宽面，麻辣鲜香豪爽过瘾。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=大盘鸡&type=video',
+    textUrl: 'https://home.meishichina.com/search/大盘鸡/'
+  },
+  {
+    name: '手抓饭',
+    category: '主食',
+    ingredients: ['羊肉', '胡萝卜', '洋葱', '大米'],
+    desc: '新疆传统美食，羊肉胡萝卜与米饭同焖，粒粒油亮，肉香米香完美融合。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=手抓饭&type=video',
+    textUrl: 'https://home.meishichina.com/search/手抓饭/'
+  },
+
+  // ============ 京津风味 ============
+  {
+    name: '炸酱面',
+    category: '主食',
+    ingredients: ['面条', '猪肉', '黄瓜', '葱'],
+    desc: '老北京灵魂面食，肉丁炸酱拌入手擀面，配黄瓜丝，酱香浓郁清爽解腻。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=炸酱面&type=video',
+    textUrl: 'https://home.meishichina.com/search/炸酱面/'
+  },
+  {
+    name: '京酱肉丝',
+    category: '炒菜',
+    ingredients: ['猪肉', '豆皮', '葱'],
+    desc: '北京名菜，肉丝酱爆后铺在葱丝上，用豆皮卷着吃，酱香浓郁咸甜适口。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=京酱肉丝&type=video',
+    textUrl: 'https://home.meishichina.com/search/京酱肉丝/'
+  },
+
+  // ============ 上海/江浙 ============
+  {
+    name: '生煎包',
+    category: '主食',
+    ingredients: ['面粉', '猪肉', '葱', '姜'],
+    desc: '上海经典小吃，包子底部煎得金黄焦脆，咬开汤汁四溢，蘸醋吃绝配。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=生煎包&type=video',
+    textUrl: 'https://home.meishichina.com/search/生煎包/'
+  },
+
+  // ============ 台湾 ============
+  {
+    name: '卤肉饭',
+    category: '主食',
+    ingredients: ['五花肉', '洋葱', '鸡蛋'],
+    desc: '台湾国民美食，五花肉丁卤至软烂油亮，浇在白饭上配卤蛋，酱香浓郁。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=卤肉饭&type=video',
+    textUrl: 'https://home.meishichina.com/search/卤肉饭/'
+  },
+  {
+    name: '三杯鸡',
+    category: '炒菜',
+    ingredients: ['鸡腿', '蒜', '姜'],
+    desc: '台湾经典，一杯米酒一杯酱油一杯麻油，焖至汤汁收干，蒜香扑鼻肉嫩多汁。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=三杯鸡&type=video',
+    textUrl: 'https://home.meishichina.com/search/三杯鸡/'
+  },
+
+  // ============ 云南 ============
+  {
+    name: '过桥米线',
+    category: '汤羹',
+    ingredients: ['鸡胸肉', '豆腐', '鸡蛋', '豆芽', '香菜'],
+    desc: '云南传奇美食，滚烫鸡汤现场烫熟薄肉片和米线，鲜美无比仪式感满满。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=过桥米线&type=video',
+    textUrl: 'https://home.meishichina.com/search/过桥米线/'
+  },
+
+  // ============ 陕西 ============
+  {
+    name: '臊子面',
+    category: '主食',
+    ingredients: ['面条', '猪肉', '胡萝卜', '土豆', '木耳', '鸡蛋'],
+    desc: '陕西面食之魂，臊子汤酸辣鲜香，面条薄筋光，煎稀汪，一碗下肚酣畅淋漓。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=臊子面&type=video',
+    textUrl: 'https://home.meishichina.com/search/臊子面/'
+  },
+  {
+    name: '凉皮',
+    category: '凉拌',
+    ingredients: ['面粉', '黄瓜', '蒜', '辣椒'],
+    desc: '陕西消暑神器，洗面筋蒸凉皮，配黄瓜丝面筋，浇上油泼辣子和醋汁，酸辣爽滑。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=凉皮&type=video',
+    textUrl: 'https://home.meishichina.com/search/凉皮/'
+  },
+
+  // ============ 湖北 ============
+  {
+    name: '莲藕排骨汤',
+    category: '汤羹',
+    ingredients: ['莲藕', '排骨', '姜'],
+    desc: '湖北人家传汤品，粉藕与排骨慢炖至藕绵汤浓，藕断丝连汤鲜味美，冬日暖身。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=莲藕排骨汤&type=video',
+    textUrl: 'https://home.meishichina.com/search/莲藕排骨汤/'
+  },
+
+  // ============ 贵州 ============
+  {
+    name: '酸汤鱼',
+    category: '汤羹',
+    ingredients: ['鱼', '番茄', '辣椒', '姜'],
+    desc: '贵州苗家名菜，酸汤为灵魂，番茄发酵出的酸与辣椒的辣交融，鱼肉鲜嫩开胃。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=酸汤鱼&type=video',
+    textUrl: 'https://home.meishichina.com/search/酸汤鱼/'
+  },
+
+  // ============ 广西 ============
+  {
+    name: '桂林米粉',
+    category: '主食',
+    ingredients: ['面条', '猪肉', '花生', '葱', '酸菜'],
+    desc: '桂林人早餐之魂，Q弹米粉配卤水锅烧，酸豆角花生提味，干捞汤拌皆宜。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=桂林米粉&type=video',
+    textUrl: 'https://home.meishichina.com/search/桂林米粉/'
+  },
+
+  // ============ 新疆 ============
+  {
+    name: '葱爆羊肉',
+    category: '炒菜',
+    ingredients: ['羊肉', '洋葱', '姜', '蒜'],
+    desc: '西北经典快炒，羊肉切薄片与洋葱大火爆炒，羊肉嫩滑葱香浓郁，冬季暖身。',
+    videoUrl: 'https://www.xiachufang.com/search/?keyword=葱爆羊肉&type=video',
+    textUrl: 'https://home.meishichina.com/search/葱爆羊肉/'
   },
 ];
 
