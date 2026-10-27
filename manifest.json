@@ -2,7 +2,7 @@
   "name": "馔事鉴 - 鉴食材品美馔",
   "short_name": "馔事鉴",
   "description": "选择手边食材，智能匹配菜谱，视频教程直达B站",
-  "start_url": "/",
+  "start_url": "/recipe-website/index-complete.html",
   "display": "standalone",
   "background_color": "#0A0D12",
   "theme_color": "#0A0D12",
