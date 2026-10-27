@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#FFFFFF">
+  <title>🎋 馔事鉴 - 鉴食材，品美馔</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F5F5F7;
+      --bg-card: #FAFAFA;
+      --text-primary: #1D1D1F;
+      --text-secondary: #86868B;
+      --text-tertiary: #C7C7CC;
+      --accent-blue: #007AFF;
+      --accent-blue-light: #E5F2FF;
+      --border-color: #E5E5EA;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      --shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.12);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --radius-pill: 999px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* 顶部栏 */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-primary);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+      padding: max(env(safe-area-inset-top), 16px) 20px 16px;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .header-title h1 {
+      font-size: clamp(24px, 6vw, 28px);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-secondary);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-icon:active {
+      transform: scale(0.95);
+      background: var(--border-color);
+    }
+
+    /* 搜索框 */
+    .search-box {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 48px 14px 44px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: var(--bg-secondary);
+      font-size: 16px;
+      color: var(--text-primary);
+      transition: all 0.3s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      background: var(--bg-card);
+      box-shadow: 0 0 0 2px var(--accent-blue-light);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: var(--text-tertiary);
+      pointer-events: none;
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--text-tertiary);
+      border: none;
+      color: white;
+      font-size: 16px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .search-input:not(:placeholder-shown) ~ .clear-btn {
+      display: flex;
+    }
+
+    /* 主容器 */
+    .container {
+      padding: 20px;
+      padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    }
+
+    /* 分类区域 */
+    .category-section {
+      margin-bottom: 32px;
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .category-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .category-count {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-left: 8px;
+    }
+
+    /* 食材网格 */
+    .ingredients-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .ingredient-chip {
+      position: relative;
+      padding: 12px 8px;
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      border: 2px solid transparent;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .ingredient-chip:active {
+      transform: scale(0.95);
+    }
+
+    .ingredient-chip.selected {
+      background: var(--accent-blue-light);
+      border-color: var(--accent-blue);
+    }
+
+    .ingredient-icon {
+      font-size: 32px;
+      margin-bottom: 4px;
+    }
+
+    .ingredient-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    /* 展开/收起按钮 */
+    .toggle-btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      border: 1px dashed var(--border-color);
+      color: var(--accent-blue);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .toggle-btn:active {
+      background: var(--bg-secondary);
+    }
+
+    /* 匹配结果提示 */
+    .match-hint {
+      position: fixed;
+      bottom: calc(70px + env(safe-area-inset-bottom));
+      left: 20px;
+      right: 20px;
+      padding: 16px 20px;
+      background: var(--text-primary);
+      color: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-hover);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transform: translateY(120%);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 90;
+    }
+
+    .match-hint.show {
+      transform: translateY(0);
+    }
+
+    .match-hint-text {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .match-hint-subtext {
+      font-size: 13px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    .view-recipes-btn {
+      padding: 10px 20px;
+      border-radius: var(--radius-pill);
+      background: white;
+      color: var(--text-primary);
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* 底部导航 */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-primary);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-color);
+      padding: 8px 0 max(env(safe-area-inset-bottom), 8px);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    .nav-item.active {
+      color: var(--accent-blue);
+    }
+
+    .nav-icon {
+      font-size: 24px;
+    }
+
+    .nav-label {
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    /* 菜谱列表 */
+    .recipes-view {
+      display: none;
+      padding: 20px;
+      padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    }
+
+    .recipes-view.active {
+      display: block;
+    }
+
+    .recipes-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-secondary);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .recipes-title {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .recipe-card {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .recipe-card:active {
+      transform: scale(0.98);
+    }
+
+    .recipe-name {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .recipe-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .recipe-ingredients {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .ingredient-tag {
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      background: white;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    /* 分类筛选标签 */
+    .category-filters {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 0 20px 16px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .category-filters::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-chip {
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-secondary);
+      border: 2px solid transparent;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-chip.active {
+      background: var(--accent-blue);
+      color: white;
+    }
+
+    .filter-chip:active {
+      transform: scale(0.95);
+    }
+
+    /* 响应式 */
+    @media (min-width: 768px) {
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .ingredients-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+    }
+
+    /* 隐藏类 */
+    .hidden {
+      display: none !important;
+    }
+
+    /* 加载动画 */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .loading {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部栏 -->
+  <div class="header">
+    <div class="header-title">
+      <h1>🎋 馔事鉴</h1>
+      <div class="header-actions">
+        <button class="btn-icon" id="randomBtn" title="今天吃什么">🎲</button>
+        <button class="btn-icon" id="clearAllBtn" title="清空选择">🗑️</button>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        class="search-input"
+        id="searchInput"
+        placeholder="食材或一句话，如：土豆和鸡蛋，不要辣"
+        autocomplete="off"
+      >
+      <button class="clear-btn" id="clearSearchBtn">×</button>
+    </div>
+  </div>
+
+  <!-- 主内容 - 食材选择 -->
+  <div class="container" id="ingredientsView">
+    <!-- 蔬菜分类 -->
+    <div class="category-section">
+      <div class="category-header">
+        <div>
+          <span class="category-title">蔬菜</span>
+          <span class="category-count" id="vegetableCount"></span>
+        </div>
+      </div>
+      <div class="ingredients-grid" id="vegetableGrid"></div>
+      <button class="toggle-btn hidden" id="vegetableToggle">
+        <span class="toggle-text">展开更多</span>
+      </button>
+    </div>
+
+    <!-- 肉和蛋分类 -->
+    <div class="category-section">
+      <div class="category-header">
+        <div>
+          <span class="category-title">肉和蛋</span>
+          <span class="category-count" id="meatCount"></span>
+        </div>
+      </div>
+      <div class="ingredients-grid" id="meatGrid"></div>
+      <button class="toggle-btn hidden" id="meatToggle">
+        <span class="toggle-text">展开更多</span>
+      </button>
+    </div>
+
+    <!-- 主食调料分类 -->
+    <div class="category-section">
+      <div class="category-header">
+        <div>
+          <span class="category-title">主食调料</span>
+          <span class="category-count" id="stapleCount"></span>
+        </div>
+      </div>
+      <div class="ingredients-grid" id="stapleGrid"></div>
+      <button class="toggle-btn hidden" id="stapleToggle">
+        <span class="toggle-text">展开更多</span>
+      </button>
+    </div>
+
+    <!-- 提示文本 -->
+    <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+      <p style="font-size: 16px; margin-bottom: 8px;">选好食材，看看能做什么</p>
+      <p style="font-size: 14px; opacity: 0.8;">厨具可选，不选也能找菜谱</p>
+    </div>
+  </div>
+
+  <!-- 菜谱列表视图 -->
+  <div class="recipes-view" id="recipesView">
+    <div class="recipes-header">
+      <button class="back-btn" id="backBtn">←</button>
+      <h2 class="recipes-title">找到 <span id="recipeCount">0</span> 道菜</h2>
+    </div>
+
+    <!-- 分类筛选 -->
+    <div class="category-filters" id="categoryFilters">
+      <button class="filter-chip active" data-category="全部">全部</button>
+      <button class="filter-chip" data-category="炒菜">🔥 炒菜</button>
+      <button class="filter-chip" data-category="汤羹">🍲 汤羹</button>
+      <button class="filter-chip" data-category="炖菜">🥘 炖菜</button>
+      <button class="filter-chip" data-category="凉拌">🥗 凉拌</button>
+      <button class="filter-chip" data-category="主食">🍚 主食</button>
+      <button class="filter-chip" data-category="烤箱">🔥 烤箱</button>
+      <button class="filter-chip" data-category="炸锅">🍟 炸锅</button>
+      <button class="filter-chip" data-category="蒸菜">♨️ 蒸菜</button>
+    </div>
+
+    <div id="recipesList"></div>
+  </div>
+
+  <!-- 匹配提示 -->
+  <div class="match-hint" id="matchHint">
+    <div>
+      <div class="match-hint-text">找到 <span id="matchCount">0</span> 道菜</div>
+      <div class="match-hint-subtext">点击查看详情</div>
+    </div>
+    <button class="view-recipes-btn" id="viewRecipesBtn">查看</button>
+  </div>
+
+  <!-- 底部导航 -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-view="ingredients">
+      <span class="nav-icon">🍳</span>
+      <span class="nav-label">做菜</span>
+    </button>
+    <button class="nav-item" data-view="recipes">
+      <span class="nav-icon">📖</span>
+      <span class="nav-label">菜谱</span>
+    </button>
+    <button class="nav-item" data-view="discover">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">发现</span>
+    </button>
+    <button class="nav-item" data-view="profile">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">我的</span>
+    </button>
+  </nav>
+
+  <script src="recipes-data-100.js"></script>
+  <script>
+// ========== 数据结构 ==========
+
+// 食材分类数据
+const INGREDIENTS_DATA = {
+  vegetable: {
+    label: '蔬菜',
+    items: [
+      { name: '土豆', icon: '🥔' },
+      { name: '胡萝卜', icon: '🥕' },
+      { name: '西兰花', icon: '🥦' },
+      { name: '番茄', icon: '🍅' },
+      { name: '黄瓜', icon: '🥒' },
+      { name: '洋葱', icon: '🧅' },
+      { name: '青椒', icon: '🫑' },
+      { name: '菌菇', icon: '🍄' },
+      { name: '茄子', icon: '🍆' },
+      { name: '豆腐', icon: '🥛' },
+      { name: '包菜', icon: '🥬' },
+      { name: '白菜', icon: '🥬' },
+      { name: '芹菜', icon: '🌿' },
+      { name: '韭菜', icon: '🌿' },
+      { name: '蒜苗', icon: '🌱' },
+      { name: '豆角', icon: '🫘' },
+      { name: '冬瓜', icon: '🥒' },
+      { name: '南瓜', icon: '🎃' },
+    ],
+    defaultShow: 8
+  },
+  meat: {
+    label: '肉和蛋',
+    items: [
+      { name: '香肠', icon: '🌭' },
+      { name: '鸡肉', icon: '🍗' },
+      { name: '猪肉', icon: '🥩' },
+      { name: '鸡蛋', icon: '🥚' },
+      { name: '虾', icon: '🦐' },
+      { name: '牛肉', icon: '🥩' },
+      { name: '鱼', icon: '🐟' },
+      { name: '排骨', icon: '🍖' },
+      { name: '五花肉', icon: '🥓' },
+      { name: '鸭肉', icon: '🦆' },
+      { name: '羊肉', icon: '🐑' },
+      { name: '培根', icon: '🥓' },
+    ],
+    defaultShow: 8
+  },
+  staple: {
+    label: '主食调料',
+    items: [
+      { name: '米饭', icon: '🍚' },
+      { name: '面条', icon: '🍜' },
+      { name: '馒头', icon: '🥟' },
+      { name: '豆腐', icon: '🧊' },
+      { name: '粉丝', icon: '🍜' },
+      { name: '辣椒', icon: '🌶️' },
+      { name: '花椒', icon: '🌰' },
+      { name: '八角', icon: '⭐' },
+    ],
+    defaultShow: 8
+  }
+};
+
+// 全局状态
+const state = {
+  selectedIngredients: new Set(),
+  excludedIngredients: new Set(),
+  matchedRecipes: [],
+  currentView: 'ingredients',
+  expandedCategories: new Set(),
+  currentCategory: '全部'
+};
+
+// ========== 初始化 ==========
+
+function init() {
+  renderIngredients();
+  bindEvents();
+  updateMatchHint();
+}
+
+// ========== 渲染食材 ==========
+
+function renderIngredients() {
+  Object.entries(INGREDIENTS_DATA).forEach(([categoryKey, category]) => {
+    const grid = document.getElementById(`${categoryKey}Grid`);
+    const toggle = document.getElementById(`${categoryKey}Toggle`);
+    const count = document.getElementById(`${categoryKey}Count`);
+
+    const isExpanded = state.expandedCategories.has(categoryKey);
+    const items = isExpanded ? category.items : category.items.slice(0, category.defaultShow);
+
+    // 渲染食材
+    grid.innerHTML = items.map(item => `
+      <div class="ingredient-chip" data-name="${item.name}" data-category="${categoryKey}">
+        <div class="ingredient-icon">${item.icon}</div>
+        <div class="ingredient-name">${item.name}</div>
+      </div>
+    `).join('');
+
+    // 显示数量
+    count.textContent = `${category.items.length} 种`;
+
+    // 显示/隐藏展开按钮
+    if (category.items.length > category.defaultShow) {
+      toggle.classList.remove('hidden');
+      const toggleText = toggle.querySelector('.toggle-text');
+      if (isExpanded) {
+        toggleText.textContent = '收起';
+      } else {
+        const remaining = category.items.length - category.defaultShow;
+        toggleText.textContent = `展开更多 ${remaining} 种`;
+      }
+    }
+  });
+
+  // 恢复选中状态
+  state.selectedIngredients.forEach(name => {
+    const chip = document.querySelector(`.ingredient-chip[data-name="${name}"]`);
+    if (chip) chip.classList.add('selected');
+  });
+}
+
+// ========== 事件绑定 ==========
+
+function bindEvents() {
+  // 食材选择
+  document.addEventListener('click', (e) => {
+    const chip = e.target.closest('.ingredient-chip');
+    if (chip) {
+      const name = chip.dataset.name;
+      toggleIngredient(name);
+      chip.classList.toggle('selected');
+      updateMatchHint();
+    }
+  });
+
+  // 展开/收起
+  ['vegetable', 'meat', 'staple'].forEach(key => {
+    const toggle = document.getElementById(`${key}Toggle`);
+    toggle?.addEventListener('click', () => {
+      if (state.expandedCategories.has(key)) {
+        state.expandedCategories.delete(key);
+      } else {
+        state.expandedCategories.add(key);
+      }
+      renderIngredients();
+    });
+  });
+
+  // 搜索框
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', debounce(handleSearch, 300));
+
+  // 清空搜索
+  document.getElementById('clearSearchBtn').addEventListener('click', () => {
+    searchInput.value = '';
+    searchInput.focus();
+  });
+
+  // 随机推荐
+  document.getElementById('randomBtn').addEventListener('click', randomRecipe);
+
+  // 清空选择
+  document.getElementById('clearAllBtn').addEventListener('click', clearAll);
+
+  // 查看菜谱按钮
+  document.getElementById('viewRecipesBtn').addEventListener('click', showRecipes);
+
+  // 返回按钮
+  document.getElementById('backBtn').addEventListener('click', () => {
+    switchView('ingredients');
+  });
+
+  // 底部导航
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const view = item.dataset.view;
+      if (view === 'ingredients') {
+        switchView('ingredients');
+      } else if (view === 'recipes') {
+        showRecipes();
+      } else {
+        alert(`「${item.querySelector('.nav-label').textContent}」功能开发中...`);
+      }
+    });
+  });
+
+  // 分类筛选
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      // 更新选中状态
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+
+      // 更新当前分类
+      state.currentCategory = chip.dataset.category;
+
+      // 重新渲染菜谱列表
+      renderRecipesList();
+    });
+  });
+}
+
+// ========== 核心逻辑 ==========
+
+function toggleIngredient(name) {
+  if (state.selectedIngredients.has(name)) {
+    state.selectedIngredients.delete(name);
+  } else {
+    state.selectedIngredients.add(name);
+  }
+}
+
+function updateMatchHint() {
+  if (state.selectedIngredients.size === 0) {
+    document.getElementById('matchHint').classList.remove('show');
+    return;
+  }
+
+  // 匹配菜谱
+  const matched = matchRecipes(Array.from(state.selectedIngredients));
+  state.matchedRecipes = matched;
+
+  // 显示提示
+  document.getElementById('matchCount').textContent = matched.length;
+  document.getElementById('matchHint').classList.add('show');
+}
+
+function matchRecipes(selectedIngredients) {
+  if (!window.RECIPES_DATA) return [];
+
+  return window.RECIPES_DATA.filter(recipe => {
+    // 至少匹配一个食材
+    return selectedIngredients.some(ing =>
+      recipe.ingredients.some(recipeIng =>
+        recipeIng.includes(ing) || ing.includes(recipeIng)
+      )
+    );
+  }).sort((a, b) => {
+    // 按匹配度排序
+    const matchA = selectedIngredients.filter(ing =>
+      a.ingredients.some(ri => ri.includes(ing) || ing.includes(ri))
+    ).length;
+    const matchB = selectedIngredients.filter(ing =>
+      b.ingredients.some(ri => ri.includes(ing) || ing.includes(ri))
+    ).length;
+    return matchB - matchA;
+  });
+}
+
+function showRecipes() {
+  if (state.matchedRecipes.length === 0) {
+    alert('请先选择食材');
+    return;
+  }
+
+  document.getElementById('recipeCount').textContent = state.matchedRecipes.length;
+  renderRecipesList();
+  switchView('recipes');
+}
+
+function renderRecipesList() {
+  const list = document.getElementById('recipesList');
+
+  // 按分类筛选
+  let recipes = state.matchedRecipes;
+  if (state.currentCategory !== '全部') {
+    recipes = recipes.filter(recipe => recipe.category === state.currentCategory);
+  }
+
+  if (recipes.length === 0) {
+    list.innerHTML = `
+      <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+        <div style="font-size: 48px; margin-bottom: 16px;">🤔</div>
+        <div style="font-size: 16px;">这个分类暂无匹配的菜谱</div>
+        <div style="font-size: 14px; margin-top: 8px; opacity: 0.8;">试试其他分类吧</div>
+      </div>
+    `;
+    return;
+  }
+
+  // 渲染菜谱列表
+  list.innerHTML = recipes.map(recipe => `
+    <div class="recipe-card" onclick="openRecipe('${recipe.search_url || ''}', '${recipe.name}')">
+      <div class="recipe-name">${recipe.name}</div>
+      <div class="recipe-meta">
+        <span>🏷️ ${recipe.category}</span>
+        <span>📍 ${recipe.region}</span>
+      </div>
+      <div class="recipe-ingredients">
+        ${recipe.ingredients.slice(0, 6).map(ing =>
+          `<span class="ingredient-tag">${ing}</span>`
+        ).join('')}
+        ${recipe.ingredients.length > 6 ? `<span class="ingredient-tag">+${recipe.ingredients.length - 6}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function openRecipe(url, name) {
+  if (url) {
+    window.open(url, '_blank');
+  } else {
+    alert(`「${name}」暂无视频链接`);
+  }
+}
+
+function randomRecipe() {
+  if (!window.RECIPES_DATA || window.RECIPES_DATA.length === 0) return;
+
+  const random = window.RECIPES_DATA[Math.floor(Math.random() * window.RECIPES_DATA.length)];
+  alert(`🎲 今天吃：${random.name}\n\n${random.desc}\n\n点击查看做法？`);
+  openRecipe(random.search_url);
+}
+
+function clearAll() {
+  state.selectedIngredients.clear();
+  document.querySelectorAll('.ingredient-chip.selected').forEach(chip => {
+    chip.classList.remove('selected');
+  });
+  updateMatchHint();
+}
+
+function handleSearch(e) {
+  const query = e.target.value.trim().toLowerCase();
+  if (!query) return;
+
+  // 简单的关键词匹配
+  const keywords = query.split(/[,，、\s]+/);
+  keywords.forEach(kw => {
+    // 查找匹配的食材
+    Object.values(INGREDIENTS_DATA).forEach(category => {
+      category.items.forEach(item => {
+        if (item.name.includes(kw)) {
+          state.selectedIngredients.add(item.name);
+        }
+      });
+    });
+  });
+
+  renderIngredients();
+  updateMatchHint();
+}
+
+function switchView(view) {
+  state.currentView = view;
+
+  // 切换视图
+  document.getElementById('ingredientsView').style.display = view === 'ingredients' ? 'block' : 'none';
+  document.getElementById('recipesView').classList.toggle('active', view === 'recipes');
+
+  // 更新导航状态
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.view === view);
+  });
+
+  // 隐藏提示
+  if (view === 'recipes') {
+    document.getElementById('matchHint').classList.remove('show');
+  }
+
+  // 返回时重置分类筛选
+  if (view === 'ingredients') {
+    state.currentCategory = '全部';
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.classList.toggle('active', chip.dataset.category === '全部');
+    });
+  }
+}
+
+// ========== 工具函数 ==========
+
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// ========== 启动 ==========
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+// 注册 Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+  </script>
+
+</body>
+</html>
