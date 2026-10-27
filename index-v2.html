@@ -163,80 +163,133 @@
     }
 
     .category-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       margin-bottom: 16px;
     }
 
     .category-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .category-count {
       font-size: 14px;
+      font-weight: 400;
       color: var(--text-secondary);
-      margin-left: 8px;
+      letter-spacing: 0.5px;
     }
 
     /* 食材网格 */
     .ingredients-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
       margin-bottom: 12px;
     }
 
     .ingredient-chip {
       position: relative;
-      padding: 12px 8px;
-      border-radius: var(--radius-md);
-      background: var(--bg-secondary);
+      padding: 14px 8px;
+      border-radius: 18px;
+      background: white;
       border: 2px solid transparent;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
       user-select: none;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     }
 
     .ingredient-chip:active {
-      transform: scale(0.95);
+      transform: scale(0.96);
     }
 
     .ingredient-chip.selected {
       background: var(--accent-blue-light);
       border-color: var(--accent-blue);
+      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.15);
     }
 
     .ingredient-icon {
-      font-size: 32px;
-      margin-bottom: 4px;
+      font-size: 28px;
+      margin-bottom: 6px;
+      display: block;
     }
 
     .ingredient-name {
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 13px;
+      font-weight: 400;
       color: var(--text-primary);
+      line-height: 1.2;
     }
 
     /* 展开/收起按钮 */
     .toggle-btn {
-      width: 100%;
-      padding: 10px;
-      border-radius: var(--radius-sm);
+      padding: 10px 0;
+      border-radius: 0;
       background: transparent;
-      border: 1px dashed var(--border-color);
+      border: none;
+      color: var(--accent-blue);
+      font-size: 14px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .toggle-btn:active {
+      opacity: 0.6;
+    }
+
+    .toggle-icon {
+      font-size: 12px;
+      transition: transform 0.3s;
+    }
+
+    .toggle-btn.expanded .toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    /* 提示文本 */
+    .hint-box {
+      margin: 32px 20px 20px;
+      padding: 16px 20px;
+      background: #F0F7FF;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hint-text {
+      flex: 1;
+    }
+
+    .hint-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .hint-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .hint-btn {
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      background: white;
+      border: 1px solid var(--accent-blue);
       color: var(--accent-blue);
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: 12px;
     }
 
-    .toggle-btn:active {
-      background: var(--bg-secondary);
+    .hint-btn:active {
+      background: var(--accent-blue-light);
     }
 
     /* 匹配结果提示 */
@@ -500,49 +553,46 @@
     <!-- 蔬菜分类 -->
     <div class="category-section">
       <div class="category-header">
-        <div>
-          <span class="category-title">蔬菜</span>
-          <span class="category-count" id="vegetableCount"></span>
-        </div>
+        <div class="category-title">蔬菜</div>
       </div>
       <div class="ingredients-grid" id="vegetableGrid"></div>
       <button class="toggle-btn hidden" id="vegetableToggle">
-        <span class="toggle-text">展开更多</span>
+        <span class="toggle-icon">▼</span>
+        <span class="toggle-text">更多 15 种</span>
       </button>
     </div>
 
     <!-- 肉和蛋分类 -->
     <div class="category-section">
       <div class="category-header">
-        <div>
-          <span class="category-title">肉和蛋</span>
-          <span class="category-count" id="meatCount"></span>
-        </div>
+        <div class="category-title">肉和蛋</div>
       </div>
       <div class="ingredients-grid" id="meatGrid"></div>
       <button class="toggle-btn hidden" id="meatToggle">
-        <span class="toggle-text">展开更多</span>
+        <span class="toggle-icon">▼</span>
+        <span class="toggle-text">更多 5 种</span>
       </button>
     </div>
 
     <!-- 主食调料分类 -->
     <div class="category-section">
       <div class="category-header">
-        <div>
-          <span class="category-title">主食调料</span>
-          <span class="category-count" id="stapleCount"></span>
-        </div>
+        <div class="category-title">主食</div>
       </div>
       <div class="ingredients-grid" id="stapleGrid"></div>
       <button class="toggle-btn hidden" id="stapleToggle">
-        <span class="toggle-text">展开更多</span>
+        <span class="toggle-icon">▼</span>
+        <span class="toggle-text">更多</span>
       </button>
     </div>
 
-    <!-- 提示文本 -->
-    <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
-      <p style="font-size: 16px; margin-bottom: 8px;">选好食材，看看能做什么</p>
-      <p style="font-size: 14px; opacity: 0.8;">厨具可选，不选也能找菜谱</p>
+    <!-- 提示区域 -->
+    <div class="hint-box" id="hintBox" style="display: none;">
+      <div class="hint-text">
+        <div class="hint-title">选好食材，看看能做什么</div>
+        <div class="hint-subtitle">厨具可选，不选也能找菜谱</div>
+      </div>
+      <button class="hint-btn" onclick="tryExample()">试试番茄 + 鸡蛋</button>
     </div>
   </div>
 
@@ -686,7 +736,6 @@ function renderIngredients() {
   Object.entries(INGREDIENTS_DATA).forEach(([categoryKey, category]) => {
     const grid = document.getElementById(`${categoryKey}Grid`);
     const toggle = document.getElementById(`${categoryKey}Toggle`);
-    const count = document.getElementById(`${categoryKey}Count`);
 
     const isExpanded = state.expandedCategories.has(categoryKey);
     const items = isExpanded ? category.items : category.items.slice(0, category.defaultShow);
@@ -694,23 +743,24 @@ function renderIngredients() {
     // 渲染食材
     grid.innerHTML = items.map(item => `
       <div class="ingredient-chip" data-name="${item.name}" data-category="${categoryKey}">
-        <div class="ingredient-icon">${item.icon}</div>
+        <span class="ingredient-icon">${item.icon}</span>
         <div class="ingredient-name">${item.name}</div>
       </div>
     `).join('');
-
-    // 显示数量
-    count.textContent = `${category.items.length} 种`;
 
     // 显示/隐藏展开按钮
     if (category.items.length > category.defaultShow) {
       toggle.classList.remove('hidden');
       const toggleText = toggle.querySelector('.toggle-text');
+      const toggleIcon = toggle.querySelector('.toggle-icon');
+
       if (isExpanded) {
         toggleText.textContent = '收起';
+        toggle.classList.add('expanded');
       } else {
         const remaining = category.items.length - category.defaultShow;
-        toggleText.textContent = `展开更多 ${remaining} 种`;
+        toggleText.textContent = `更多 ${remaining} 种`;
+        toggle.classList.remove('expanded');
       }
     }
   });
@@ -720,6 +770,14 @@ function renderIngredients() {
     const chip = document.querySelector(`.ingredient-chip[data-name="${name}"]`);
     if (chip) chip.classList.add('selected');
   });
+
+  // 显示/隐藏提示框
+  const hintBox = document.getElementById('hintBox');
+  if (state.selectedIngredients.size === 0) {
+    hintBox.style.display = 'flex';
+  } else {
+    hintBox.style.display = 'none';
+  }
 }
 
 // ========== 事件绑定 ==========
@@ -911,8 +969,20 @@ function randomRecipe() {
   if (!window.RECIPES_DATA || window.RECIPES_DATA.length === 0) return;
 
   const random = window.RECIPES_DATA[Math.floor(Math.random() * window.RECIPES_DATA.length)];
-  alert(`🎲 今天吃：${random.name}\n\n${random.desc}\n\n点击查看做法？`);
-  openRecipe(random.search_url);
+  if (confirm(`🎲 今天吃：${random.name}\n\n${random.desc}\n\n点击「确定」查看做法`)) {
+    openRecipe(random.search_url, random.name);
+  }
+}
+
+function tryExample() {
+  // 选中番茄和鸡蛋
+  state.selectedIngredients.add('番茄');
+  state.selectedIngredients.add('鸡蛋');
+  renderIngredients();
+  updateMatchHint();
+
+  // 滚动到顶部
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function clearAll() {
